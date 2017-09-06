@@ -2,6 +2,10 @@
 Param(
 	[Parameter(Mandatory=$true, Position=1)]
 	$version,
+	[Parameter(Mandatory=$false, Position=3)]
+	$assemblyVersion = $version,
+	[Parameter(Mandatory=$false)]
+	$fileVersion = $assemblyVersion,
     [Parameter(Mandatory=$false, Position=2)]
 	$filePath = ".\CityInfo.Api\CityInfo.Api.csproj"
 )
@@ -13,8 +17,15 @@ $propertyGroup = $xml.Project.PropertyGroup;
 
 if($propertyGroup)
 {
-	$propertyGroup["AssemblyVersion"]."#text" = "$version"
-	$propertyGroup["FileVersion"]."#text" = "$version"
+	Write-Host "Replacing version info..."
+	Write-Host "Version: $version"
+	Write-Host "AssemblyVersion: $assemblyVersion"
+	Write-Host "FileVersion: $fileVersion"
 	
+	
+	$propertyGroup["Version"]."#text" = "$version"
+	$propertyGroup["AssemblyVersion"]."#text" = "$assemblyVersion"
+	$propertyGroup["FileVersion"]."#text" = "$fileVersion"
+	
+	$xml.Save($filePath)
 }
-$xml.Save($filePath)
