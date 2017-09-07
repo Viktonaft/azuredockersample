@@ -13,16 +13,21 @@ function die {
 #export PATH=$PATH:/opt/dotnet1.2/
 
 if [ -z "$1" ]; then
-  log "build version was not provided: usage bash build.sh '<VERSION>'"
+  log "build version was not provided: usage bash build.sh '<VERSION>' <ARTIFACTS OUTPUT>"
   exit 1
 fi
 
+if [ -z "$2" ]; then
+  log "arttifacts output was not provided: usage bash build.sh '<VERSION>' <ARTIFACTS OUTPUT>"
+  exit 1
+fi
+
+output="$2"
 majorVersion=`echo $1 | cut -d _ -f 2 | cut -d . -f 1`
 minorVersion=`echo $1 | cut -d _ -f 2 | cut -d . -f 2`
 VERSION="$majorVersion.$minorVersion.0.0"
 
 solutionRoot="`pwd`/../CityInfoApi"
-output="$solutionRoot/buildArtifacts"
 #unitTestsLocation="$solutionRoot/**/**.csproj"
 projectToPublish="$solutionRoot/CityInfo.Api/CityInfo.Api.csproj"
 solutionName="CityInfoApi.sln"
