@@ -45,4 +45,4 @@ log "publishing project: '$projectToPublish'..."
 dotnet publish $projectToPublish --configuration Release --output $output -v normal /p:Version=$VERSION
 [ $? == 0 ] || die "Publishing failed!"
 
-tar -czvf "$solutionRoot/CityInfoApi_$VERSION.tar.gz" -C "$output" .
+tar -czvf "$solutionRoot/CityInfoApi_$1.tar.gz" -C "$output" .
