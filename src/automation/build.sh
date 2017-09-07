@@ -1,11 +1,11 @@
 #!/bin/bash
 
-function log { 
+function log {
    echo $1
 }
 
 function die {
-         [ -n $1 ] && log $1
+         #[ -n $1 ] && log $1
          log "Job failed!"
          exit 1
 }
@@ -17,19 +17,24 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-VERSION=$1
+majorVersion=`echo $1 | cut -d _ -f 2 | cut -d . -f 1`
+minorVersion=`echo $1 | cut -d _ -f 2 | cut -d . -f 2`
+VERSION="$majorVersion.$minorVersion.0.0"
+
 solutionRoot="`pwd`/../CityInfoApi"
 output="$solutionRoot/buildArtifacts"
 #unitTestsLocation="$solutionRoot/**/**.csproj"
 projectToPublish="$solutionRoot/CityInfo.Api/CityInfo.Api.csproj"
+solutionName="CityInfoApi.sln"
 cd $solutionRoot
+echo "solution root: $solutionRoot"
 
 log "Restoring dependencies..."
-dotnet restore --packages "$solutionRoot/packages" /p:Version=$VERSION
+dotnet restore --packages "$solutionRoot/packages" /p:Version=$VERSION $solutionName
 [ $? == 0 ] || die "Restoring dependencies has failed!"
 
 log "building solution..."
-dotnet build --configuration Release -v normal /p:Version=$VERSION
+dotnet build --configuration Release -v normal /p:Version=$VERSION $solutionName
 [ $? == 0 ] || die "build failed!"
 
 #log "running tests: '$unitTestsLocation'..."
@@ -40,4 +45,4 @@ log "publishing project: '$projectToPublish'..."
 dotnet publish $projectToPublish --configuration Release --output $output -v normal /p:Version=$VERSION
 [ $? == 0 ] || die "Publishing failed!"
 
-tar -czvf "$WORKSPACE/LeisureApp_$VERSION.tar.gz" -C "$output" .
+tar -czvf "$solutionRoot/CityInfoApi_$VERSION.tar.gz" -C "$output" .
